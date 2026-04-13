@@ -52,10 +52,40 @@ func draw(screen *ebiten.Image, x float64, y float64, scale float64, planetImage
     }
 }
 
+type Planet int
+
+const (
+    Earth Planet = iota
+    Mars
+)
+
+func (planet Planet) Next() Planet {
+    switch planet {
+    case Earth:
+        return Mars
+    case Mars:
+        return Earth
+    }
+
+    return Earth
+}
+
+func (planet Planet) Previous() Planet {
+    switch planet {
+    case Earth:
+        return Mars
+    case Mars:
+        return Earth
+    }
+
+    return Earth
+}
+
 type Game struct {
     Counter uint64
     Shader *ebiten.Shader
     Planet *ebiten.Image
+    CurrentPlanet Planet
     CloudImage *ebiten.Image
     Init sync.Once
     drawClouds bool
@@ -109,6 +139,7 @@ func MakeGame() *Game {
         Counter: 0,
         Shader: shader,
         Planet: planetImage,
+        CurrentPlanet: Earth,
         drawClouds: true,
         CloudImage: cloudImage,
         Scale: 0.5,
@@ -125,6 +156,26 @@ func (g *Game) Update() error {
         }
         if k == ebiten.KeySpace {
             g.drawClouds = !g.drawClouds
+        }
+
+        change := false
+        if k == ebiten.KeyLeft {
+            g.CurrentPlanet = g.CurrentPlanet.Previous()
+            change = true
+        } else if k == ebiten.KeyRight {
+            g.CurrentPlanet = g.CurrentPlanet.Next()
+            change = true
+        }
+
+        if change {
+            switch g.CurrentPlanet {
+                case Earth:
+                    g.Planet, _, _ = ebitenutil.NewImageFromFile("earth.jpg")
+                    g.CloudImage = makeCloudImage(g.Planet.Bounds())
+                case Mars:
+                    g.Planet, _, _ = ebitenutil.NewImageFromFile("mars.jpg")
+                    g.CloudImage = makeCloudImage(g.Planet.Bounds())
+            }
         }
     }
 
