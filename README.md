@@ -17,6 +17,17 @@ And for good measure, apply a simple lighting effect to the pixel value. The pla
 
 Clouds are also drawn on top of the planet, which uses the same exact renderer as the planet but with a smaller angle to make the clouds rotate slower than the planet, and also with a blend setting to make the clouds semi-transparent. The cloud texture is created by creating a new image the same size as the planet texture, and copying small cloud images onto it at random positions.
 
+![cloud](./cloud1.png)
+Psuedo-code for cloud image creation
+```
+    img := ebiten.NewImage(planetWidth, planetHeight)
+    var cloud *ebiten.Image // load from a file
+    for range 10 {
+        img.DrawImage(cloud, randomPosition())
+    }
+```
+The `img` texture will contain a bunch of cloud images on it drawn at random positions, and the rest of the pixels will be transparent. This texture is then passed into the same shader as the planet.
+
 A walkthrough of the shader code:
 
 ```
