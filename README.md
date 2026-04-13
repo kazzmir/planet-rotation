@@ -64,7 +64,7 @@ Since the shader draws a rectangle but we only want to draw a circle (the planet
 	z := sqrt(1.0 - r2)
 	n := normalize(vec3(p.x, p.y, z))
 ```
-Now we can reconstruct the normal vector of the sphere at this point. Since we know that the point lies on the surface of a unit sphere, we can use the p coordinates as the x and y components of the normal, and then calculate the z component using the equation of a sphere (x^2 + y^2 + z^2 = 1). We also normalize the normal vector just to be safe. Note that a pixel in the middle of the sphere will have an r2 value of 0, which means the z component will be 1 and the normal will point straight out towards the camera. A pixel near the edge of the sphere will have an r2 value close to 1, which means the z component will be close to 0 and the normal will point more towards the side.
+Now we can reconstruct the normal vector of the sphere at this point. Since we know that the point lies on the surface of a unit sphere, we can use the p coordinate as the x and y components of the normal, and then calculate the z component using the equation of a sphere (x^2 + y^2 + z^2 = 1). We also normalize the normal vector just to be safe. Note that a pixel in the middle of the sphere will have an r2 value of 0, which means the z component will be 1 and the normal will point straight out towards the camera. A pixel near the edge of the sphere will have an r2 value close to 1, which means the z component will be close to 0 and the normal will point more towards the side.
 
 The `n` 3d vector represents the pixel on the sphere that we want to rotate.
 
@@ -116,7 +116,6 @@ This formula can also be seen on the wikipedia page: https://en.wikipedia.org/wi
     pos := sphereUV.xy * resolution.xy
 ```
 Convert the texture coordinates back to pixel coordinates for texture lookup. We also use the fract function to wrap the x coordinate around, since the texture is repeated horizontally (equirectangular format), and we clamp the y coordinate to [0, 1] just to be safe.
-```
 
 ```
 	// Sample texture. Add offset as well to account for ebiten atlas
