@@ -46,7 +46,7 @@ func draw(screen *ebiten.Image, x float64, y float64, scale float64, axis Vector
         opts.Blend = ebiten.BlendLighter
         opts.Images[0] = cloudImage
         opts.ColorScale.ScaleAlpha(0.2)
-        opts.Uniforms["Rotation"] = float32(rotationSpeed * 1.5)
+        opts.Uniforms["Rotation"] = float32(rotationSpeed * 0.7)
         screen.DrawRectShader(w, h, shader, opts)
     }
 }
