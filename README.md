@@ -33,7 +33,7 @@ A walkthrough of the shader code:
 
 ```
 func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
-	// Normalize screen coords to [-1, 1]
+	// Normalize screen coords to [0, 1]
     resolution := imageSrc0Size()
     uv := (texCoord - imageSrc0Origin()) / resolution
 ```
