@@ -2,6 +2,8 @@ Rotating planet with a shader in Ebiten
 
 ![planet](./screenshot.jpg)
 
+![demo](./demo.gif)
+
 This is a simple example of how to use a shader in Ebiten to create a rotating planet effect. The shader takes as input a texture of a planet, which must be in equirectangular format (a rectangular image that can be mapped onto a sphere). Here is the earth image:
 
 ![earth](./earth.jpg)
