@@ -4,6 +4,7 @@ package main
 
 // Uniforms passed from Go
 var Rotation float
+var Axis vec3
 
 // Your planet texture
 // var PlanetTexture image
@@ -67,7 +68,8 @@ func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
     // n := vec3(p.x, p.y, 1)
 
 	// --- AXIS (tilted, includes Y so XZ rotates visually) ---
-	axis := normalize(vec3(0.4, 1.0, 0.2))
+	// axis := normalize(vec3(0.4, 1.0, 0.2))
+    axis := normalize(Axis)
 
 	// Animate rotation
 	rotated := rotateAroundAxis(n, axis, Rotation)

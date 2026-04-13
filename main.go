@@ -15,7 +15,13 @@ import (
     // "github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-func draw(screen *ebiten.Image, x float64, y float64, scale float64, planetImage *ebiten.Image, cloudImage *ebiten.Image, timeSeconds float64, shader *ebiten.Shader) {
+type Vector3 struct {
+    X float32
+    Y float32
+    Z float32
+}
+
+func draw(screen *ebiten.Image, x float64, y float64, scale float64, axis Vector3, planetImage *ebiten.Image, cloudImage *ebiten.Image, timeSeconds float64, shader *ebiten.Shader) {
 
     /*
     var opts2 ebiten.DrawImageOptions
@@ -38,6 +44,7 @@ func draw(screen *ebiten.Image, x float64, y float64, scale float64, planetImage
 
     opts.Uniforms = map[string]interface{}{
         "Rotation":       float32(rotationSpeed),
+        "Axis": []float32{axis.X, axis.Y, axis.Z},
     }
     opts.Images[0] = planetImage
 
@@ -87,6 +94,7 @@ type Game struct {
     Planet *ebiten.Image
     CurrentPlanet Planet
     CloudImage *ebiten.Image
+    Axis Vector3
     Init sync.Once
     drawClouds bool
     Scale float64
@@ -135,11 +143,18 @@ func MakeGame() *Game {
 
     cloudImage := makeCloudImage(planetImage.Bounds())
 
+    axis := Vector3{
+        X: float32(rand.Float64() - 0.5),
+        Y: float32(rand.Float64() - 0.5),
+        Z: float32(rand.Float64() - 0.5),
+    }
+
     return &Game{
         Counter: 0,
         Shader: shader,
         Planet: planetImage,
         CurrentPlanet: Earth,
+        Axis: axis,
         drawClouds: true,
         CloudImage: cloudImage,
         Scale: 0.5,
@@ -203,7 +218,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
         cloud = nil
     }
 
-    draw(screen, x, y, g.Scale, g.Planet, cloud, float64(g.Counter), g.Shader)
+    draw(screen, x, y, g.Scale, g.Axis, g.Planet, cloud, float64(g.Counter), g.Shader)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
