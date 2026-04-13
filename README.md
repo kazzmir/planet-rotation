@@ -18,6 +18,7 @@ And for good measure, apply a simple lighting effect to the pixel value. The pla
 Clouds are also drawn on top of the planet, which uses the same exact renderer as the planet but with a smaller angle to make the clouds rotate slower than the planet, and also with a blend setting to make the clouds semi-transparent. The cloud texture is created by creating a new image the same size as the planet texture, and copying small cloud images onto it at random positions.
 
 ![cloud](./cloud1.png)
+
 Psuedo-code for cloud image creation
 ```
     img := ebiten.NewImage(planetWidth, planetHeight)
