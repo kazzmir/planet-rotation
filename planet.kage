@@ -6,12 +6,10 @@ package main
 var Rotation float
 var Axis vec3
 
-// Your planet texture
-// var PlanetTexture image
-
 const PI = 3.141592653589793
 
 // Rodrigues' rotation formula
+// https://www.youtube.com/watch?v=CQSC5W5bPXQ
 func rotateAroundAxis(v vec3, axis vec3, angle float) vec3 {
 	c := cos(angle)
 	s := sin(angle)
@@ -37,65 +35,44 @@ func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
 
     uv := (texCoord - imageSrc0Origin()) / resolution
 
-    // p := uv
+    // convert from [0-1] to [-1, 1]
 	p := uv*2.0 - 1.0
 
 	// Correct aspect ratio
 	p.x *= resolution.x / resolution.y
 
-    // pos1 := vec2((p.x + 1) / 2 * resolution.x, (p.y + 1) / 2 * resolution.y)
-    // if 2 > 1 {
-    //     return imageSrc0At(pos1)
-    // }
-
-	// Sphere mask
+	// Sphere mask. Get the magnitude of the p vector
 	r2 := dot(p, p)
+    // if the magnitude is larger than the unit circle then this point lies outside
+    // the sphere
 	if r2 > 1.0 {
 		return vec4(0.0, 0.0, 0.0, 0.0)
 	}
-    /*
-    if r2 > 2 {
-        return vec4(1, 0, 1, 1)
-    }
-    if r2 <= 1 {
-        return vec4(1, 0, 0, 1)
-    }
-    */
 
 	// Reconstruct sphere normal
 	z := sqrt(1.0 - r2)
 	n := normalize(vec3(p.x, p.y, z))
-    // n := vec3(p.x, p.y, 1)
 
-	// --- AXIS (tilted, includes Y so XZ rotates visually) ---
-	// axis := normalize(vec3(0.4, 1.0, 0.2))
     axis := normalize(Axis)
 
 	// Animate rotation
 	rotated := rotateAroundAxis(n, axis, Rotation)
 
 	// Convert to UV for texture lookup
+    // UV coordinates are back in [0-1] range
 	sphereUV := dirToUV(rotated)
 
     sphereUV.x = fract(sphereUV.x)
     sphereUV.y = clamp(sphereUV.y, 0.0, 1.0)
 
+    // convert back to UV coordinates
     pos := sphereUV.xy * resolution.xy
 
-	// Sample texture
-	// col := imageSrc0At(sphereUV)
+	// Sample texture. Add offset as well to account for ebiten atlas
 	col := imageSrc0At(pos + imageSrc0Origin())
 
-    /*
-    if 2 > 1 {
-        m := imageSrc0At(uv * resolution + imageSrc0Origin())
-        // return vec4(1, 0, 0, 1)
-        // return col + m * 0.5
-        return m
-    }
-    */
-
 	// Simple lighting (fake sun from top-right)
+    // TODO: make lighting vector an input
 	lightDir := normalize(vec3(0.5, 0.5, 1.0))
 	diff := clamp(dot(rotated, lightDir), 0.0, 1.0)
 
