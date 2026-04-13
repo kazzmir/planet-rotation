@@ -22,14 +22,6 @@ type Vector3 struct {
 }
 
 func draw(screen *ebiten.Image, x float64, y float64, scale float64, axis Vector3, planetImage *ebiten.Image, cloudImage *ebiten.Image, timeSeconds float64, shader *ebiten.Shader) {
-
-    /*
-    var opts2 ebiten.DrawImageOptions
-    opts2.GeoM.Translate(10, 200)
-    opts2.GeoM.Scale(0.5, 0.5)
-    screen.DrawImage(cloudImage, &opts2)
-    */
-
     bounds := planetImage.Bounds()
     w, h := bounds.Dx(), bounds.Dy()
 
@@ -136,7 +128,6 @@ func MakeGame() *Game {
     }
 
     planetImage, _, err := ebitenutil.NewImageFromFile("earth.jpg")
-    // planetImage, _, err := ebitenutil.NewImageFromFile("mars.jpg")
     if err != nil {
         panic(err)
     }
@@ -217,6 +208,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
     if !g.drawClouds {
         cloud = nil
     }
+
+    ebitenutil.DebugPrintAt(screen, "Left/Right: Change Planet", 0, 0)
+    ebitenutil.DebugPrintAt(screen, "Space: Toggle clouds", 0, 20)
+    ebitenutil.DebugPrintAt(screen, "Mouse wheel: zoom in/out", 0, 40)
 
     draw(screen, x, y, g.Scale, g.Axis, g.Planet, cloud, float64(g.Counter), g.Shader)
 }
