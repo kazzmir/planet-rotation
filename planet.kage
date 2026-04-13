@@ -31,7 +31,16 @@ func dirToUV(d vec3) vec2 {
 func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
 	// Normalize screen coords to [-1, 1]
 	// uv := (position.xy - imageDstOrigin()) / Resolution
-	uv := texCoord.xy / Resolution
+	// uv := texCoord.xy / Resolution
+    uv := (texCoord - imageSrc0Origin()) / imageSrc0Size()
+
+    /*
+    if 2 > 1 {
+        return imageSrc0At(uv * Resolution)
+    }
+    */
+
+    // p := uv
 	p := uv*2.0 - 1.0
 
 	// Correct aspect ratio
@@ -47,13 +56,22 @@ func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
 	if r2 > 1.0 {
 		return vec4(0.0, 0.0, 0.0, 0.0)
 	}
+    /*
+    if r2 > 2 {
+        return vec4(1, 0, 1, 1)
+    }
+    if r2 <= 1 {
+        return vec4(1, 0, 0, 1)
+    }
+    */
 
 	// Reconstruct sphere normal
 	z := sqrt(1.0 - r2)
 	n := normalize(vec3(p.x, p.y, z))
+    // n := vec3(p.x, p.y, 1)
 
 	// --- AXIS (tilted, includes Y so XZ rotates visually) ---
-	axis := normalize(vec3(0.3, 1.0, 0.2))
+	axis := normalize(vec3(0.4, 1.0, 0.2))
 
 	// Animate rotation
 	angle := Time * 0.5
@@ -62,11 +80,24 @@ func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
 	// Convert to UV for texture lookup
 	sphereUV := dirToUV(rotated)
 
-    pos := vec2((sphereUV.x + 1) / 2 * Resolution.x, (sphereUV.y + 1) / 2 * Resolution.y)
+    sphereUV.x = fract(sphereUV.x)
+    sphereUV.y = clamp(sphereUV.y, 0.0, 1.0)
+
+    // pos := vec2(sphereUV.x * Resolution.x, sphereUV.y * Resolution.y)
+    pos := sphereUV.xy * Resolution.xy
 
 	// Sample texture
 	// col := imageSrc0At(sphereUV)
-	col := imageSrc0At(pos)
+	col := imageSrc0At(pos + imageSrc0Origin())
+
+    /*
+    if 2 > 1 {
+        m := imageSrc0At(uv * Resolution + imageSrc0Origin())
+        // return vec4(1, 0, 0, 1)
+        // return col + m * 0.5
+        return m
+    }
+    */
 
 	// Simple lighting (fake sun from top-right)
 	lightDir := normalize(vec3(0.5, 0.5, 1.0))
@@ -74,6 +105,8 @@ func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
 
 	// Add a bit of ambient
 	lighting := diff*0.8 + 0.8
+    // lighting := vec3(1)
+    // lighting = clamp(lighting, 0, 1)
 
 	return vec4(col.rgb * lighting, 1.0)
 }
