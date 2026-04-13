@@ -28,18 +28,14 @@ func draw(screen *ebiten.Image, planetImage *ebiten.Image, cloudImage *ebiten.Im
 
     opts := &ebiten.DrawRectShaderOptions{}
     opts.GeoM.Translate(10, 100)
-    /*
     opts.GeoM.Scale(0.5, 0.5)
-    */
 
     // fmt.Printf("Resolution: %v x %v\n", w, h)
 
-    rotationSpeed := timeSeconds / 300.0
+    rotationSpeed := timeSeconds / 600.0
 
     opts.Uniforms = map[string]interface{}{
-        "Time":       float32(rotationSpeed),
-        // "Time":       float32(0),
-        "Resolution": []float32{float32(w), float32(h)},
+        "Rotation":       float32(rotationSpeed),
     }
     opts.Images[0] = planetImage
 
@@ -48,7 +44,7 @@ func draw(screen *ebiten.Image, planetImage *ebiten.Image, cloudImage *ebiten.Im
     opts.Blend = ebiten.BlendLighter
     opts.Images[0] = cloudImage
     opts.ColorScale.ScaleAlpha(0.2)
-    opts.Uniforms["Time"] = float32(rotationSpeed * 1.5)
+    opts.Uniforms["Rotation"] = float32(rotationSpeed * 1.5)
     screen.DrawRectShader(w, h, shader, opts)
 }
 

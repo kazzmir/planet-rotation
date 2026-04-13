@@ -3,8 +3,7 @@
 package main
 
 // Uniforms passed from Go
-var Time float
-var Resolution vec2
+var Rotation float
 
 // Your planet texture
 // var PlanetTexture image
@@ -32,21 +31,18 @@ func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
 	// Normalize screen coords to [-1, 1]
 	// uv := (position.xy - imageDstOrigin()) / Resolution
 	// uv := texCoord.xy / Resolution
-    uv := (texCoord - imageSrc0Origin()) / imageSrc0Size()
 
-    /*
-    if 2 > 1 {
-        return imageSrc0At(uv * Resolution)
-    }
-    */
+    resolution := imageSrc0Size()
+
+    uv := (texCoord - imageSrc0Origin()) / resolution
 
     // p := uv
 	p := uv*2.0 - 1.0
 
 	// Correct aspect ratio
-	p.x *= Resolution.x / Resolution.y
+	p.x *= resolution.x / resolution.y
 
-    // pos1 := vec2((p.x + 1) / 2 * Resolution.x, (p.y + 1) / 2 * Resolution.y)
+    // pos1 := vec2((p.x + 1) / 2 * resolution.x, (p.y + 1) / 2 * resolution.y)
     // if 2 > 1 {
     //     return imageSrc0At(pos1)
     // }
@@ -74,8 +70,7 @@ func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
 	axis := normalize(vec3(0.4, 1.0, 0.2))
 
 	// Animate rotation
-	angle := Time * 0.5
-	rotated := rotateAroundAxis(n, axis, angle)
+	rotated := rotateAroundAxis(n, axis, Rotation)
 
 	// Convert to UV for texture lookup
 	sphereUV := dirToUV(rotated)
@@ -83,8 +78,7 @@ func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
     sphereUV.x = fract(sphereUV.x)
     sphereUV.y = clamp(sphereUV.y, 0.0, 1.0)
 
-    // pos := vec2(sphereUV.x * Resolution.x, sphereUV.y * Resolution.y)
-    pos := sphereUV.xy * Resolution.xy
+    pos := sphereUV.xy * resolution.xy
 
 	// Sample texture
 	// col := imageSrc0At(sphereUV)
@@ -92,7 +86,7 @@ func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
 
     /*
     if 2 > 1 {
-        m := imageSrc0At(uv * Resolution + imageSrc0Origin())
+        m := imageSrc0At(uv * resolution + imageSrc0Origin())
         // return vec4(1, 0, 0, 1)
         // return col + m * 0.5
         return m
